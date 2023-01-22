@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "676868436279",
+    "firebase_url": "https://react-submission.firebaseio.com",
+    "project_id": "react-submission",
+    "storage_bucket": "react-submission.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676868436279:android:aac3bf23ee5c4a6c14eab2",
+        "android_client_info": {
+          "package_name": "com.plantapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676868436279-mdbuistd1mje071498n3et30qlc3nmok.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfTjSMFyVEz8p2vfTPzaey19WdCKLm0_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676868436279-mdbuistd1mje071498n3et30qlc3nmok.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

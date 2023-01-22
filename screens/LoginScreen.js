@@ -11,13 +11,13 @@ import {
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialButton from '../components/SocialButton';
-// import {AuthContext} from '../navigation/AuthProvider';
+import {AuthContext} from '../navigation/AuthProvider';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
-  // const {login, googleLogin, fbLogin} = useContext(AuthContext);
+  const {login, googleLogin, fbLogin} = useContext(AuthContext);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -47,7 +47,7 @@ const LoginScreen = ({navigation}) => {
 
       <FormButton
         buttonTitle="Sign In"
-        // onPress={() => login(email, password)}
+        onPress={() => login(email, password)}
       />
 
       <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
