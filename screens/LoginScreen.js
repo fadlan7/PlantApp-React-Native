@@ -69,7 +69,7 @@ const LoginScreen = ({navigation}) => {
             btnType="google"
             color="#de4d41"
             backgroundColor="#f5e7ea"
-            // onPress={() => googleLogin()}
+            onPress={() => googleLogin()}
           />
         </View>
       ) : null}
