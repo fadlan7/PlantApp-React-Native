@@ -1,131 +1,154 @@
-import React, {useContext, useState} from 'react';
-import {View, Text, TouchableOpacity, Platform, StyleSheet} from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
+import React from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Keyboard,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+
+import COLORS from '../utils/Colors';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import Loader from '../components/Loader';
 import SocialButton from '../components/SocialButton';
-import {AuthContext} from '../navigation/AuthProvider';
 
 const SignupScreen = ({navigation}) => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const [confirmPassword, setConfirmPassword] = useState();
+  const [inputs, setInputs] = React.useState({
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = React.useState({});
+  const [loading, setLoading] = React.useState(false);
 
-  const {register} = useContext(AuthContext);
+  const validate = () => {
+    Keyboard.dismiss();
+    let isValid = true;
 
+    if (!inputs.email) {
+      handleError('Please input email', 'email');
+      isValid = false;
+    } else if (!inputs.email.match(/\S+@\S+\.\S+/)) {
+      handleError('Please input a valid email', 'email');
+      isValid = false;
+    }
+
+    if (!inputs.password) {
+      handleError('Please input password', 'password');
+      isValid = false;
+    } else if (inputs.password.length < 5) {
+      handleError('Min password length of 5', 'password');
+      isValid = false;
+    }
+
+    if (isValid) {
+      register();
+    }
+  };
+
+  const register = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      auth()
+        .createUserWithEmailAndPassword(inputs.email, inputs.password)
+        .then(userCredentials => {
+          const user = userCredentials.user;
+          Alert.alert('Sukses', 'Registrasi Berhasil');
+          navigation.navigate('Login');
+        })
+        .catch(error => alert(error.message));
+    }, 2000);
+  };
+
+  const googleLogin = () => {
+    setLoading(false);
+    setTimeout(async () => {
+      setLoading(true);
+
+      try {
+        const {idToken} = await GoogleSignin.signIn();
+        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        await auth().signInWithCredential(googleCredential);
+      } catch (error) {
+        console.log(error);
+      }
+    }, 2000);
+  };
+
+  const handleOnchange = (text, input) => {
+    setInputs(prevState => ({...prevState, [input]: text}));
+  };
+  const handleError = (error, input) => {
+    setErrors(prevState => ({...prevState, [input]: error}));
+  };
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Create an account</Text>
-
-      <FormInput
-        labelValue={email}
-        onChangeText={userEmail => setEmail(userEmail)}
-        placeholderText="Email"
-        iconType="user"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
-
-      <FormInput
-        labelValue={password}
-        onChangeText={userPassword => setPassword(userPassword)}
-        placeholderText="Password"
-        iconType="lock"
-        secureTextEntry={true}
-      />
-
-      <FormInput
-        labelValue={confirmPassword}
-        onChangeText={userPassword => setConfirmPassword(userPassword)}
-        placeholderText="Confirm Password"
-        iconType="lock"
-        secureTextEntry={true}
-      />
-
-      <FormButton
-        buttonTitle="Sign Up"
-        onPress={() => register(email, password)}
-      />
-
-      <View style={styles.textPrivate}>
-        <Text style={styles.color_textPrivate}>
-          By registering, you confirm that you accept our{' '}
+    <SafeAreaView style={{backgroundColor: COLORS.white, flex: 1}}>
+      <Loader visible={loading} />
+      <ScrollView
+        contentContainerStyle={{paddingTop: 50, paddingHorizontal: 20}}>
+        <Text style={{color: COLORS.black, fontSize: 40, fontWeight: 'bold'}}>
+          Register
         </Text>
-        <TouchableOpacity onPress={() => alert('Terms Clicked!')}>
-          <Text style={[styles.color_textPrivate, {color: '#e88832'}]}>
-            Terms of service
-          </Text>
-        </TouchableOpacity>
-        <Text style={styles.color_textPrivate}> and </Text>
-        <Text style={[styles.color_textPrivate, {color: '#e88832'}]}>
-          Privacy Policy
+        <Text style={{color: COLORS.grey, fontSize: 18, marginVertical: 10}}>
+          Enter Your Details to Register
         </Text>
-      </View>
-
-      {Platform.OS === 'android' ? (
-        <View>
-          <SocialButton
-            buttonTitle="Sign Up with Facebook"
-            btnType="facebook"
-            color="#4867aa"
-            backgroundColor="#e6eaf4"
-            onPress={() => {}}
+        <View style={{marginVertical: 20}}>
+          <Input
+            onChangeText={text => handleOnchange(text, 'email')}
+            onFocus={() => handleError(null, 'email')}
+            iconName="email-outline"
+            label="Email"
+            placeholder="Enter your email address"
+            keyboardType="email-address"
+            error={errors.email}
           />
 
-          <SocialButton
-            buttonTitle="Sign Up with Google"
-            btnType="google"
-            color="#de4d41"
-            backgroundColor="#f5e7ea"
-            onPress={() => {}}
+          <Input
+            onChangeText={text => handleOnchange(text, 'password')}
+            onFocus={() => handleError(null, 'password')}
+            iconName="lock-outline"
+            label="Password"
+            placeholder="Enter your password"
+            error={errors.password}
+            password
           />
+
+          <Button title="Register" onPress={validate} />
+
+          {Platform.OS === 'android' ? (
+            <View>
+              <SocialButton
+                buttonTitle="Sign In with Google"
+                btnType="google"
+                color="#de4d41"
+                backgroundColor="#f5e7ea"
+                onPress={() => googleLogin()}
+              />
+            </View>
+          ) : null}
+
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: COLORS.black,
+                textAlign: 'center',
+                fontFamily: 'Lato-Regular',
+                marginTop: 20,
+              }}>
+              Already have account? Login
+            </Text>
+          </TouchableOpacity>
         </View>
-      ) : null}
-
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.navButtonText}>Have an account? Sign In</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default SignupScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#f9fafd',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  text: {
-    fontFamily: 'Kufam-SemiBoldItalic',
-    fontSize: 28,
-    marginBottom: 10,
-    color: '#051d5f',
-  },
-  navButton: {
-    marginTop: 15,
-  },
-  navButtonText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#2e64e5',
-    fontFamily: 'Lato-Regular',
-  },
-  textPrivate: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginVertical: 35,
-    justifyContent: 'center',
-  },
-  color_textPrivate: {
-    fontSize: 13,
-    fontWeight: '400',
-    fontFamily: 'Lato-Regular',
-    color: 'grey',
-  },
-});
