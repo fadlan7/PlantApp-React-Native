@@ -1,15 +1,15 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 
-const HomeScreen = () => {
+const DetectScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text>Home Screen</Text>
+      <Text>Detect Screen</Text>
     </ScrollView>
   );
 };
 
-export default HomeScreen;
+export default DetectScreen;
 
 const styles = StyleSheet.create({
   container: {
