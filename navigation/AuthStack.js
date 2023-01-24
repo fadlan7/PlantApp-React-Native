@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import SplashScreen from '../screens/SplashScreen';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -36,11 +37,17 @@ const AuthStack = () => {
   } else if (isFirstLaunch === true) {
     routeName = 'Onboarding';
   } else {
-    routeName = 'Login';
+    // routeName = 'Login';
+    routeName = 'Splash';
   }
 
   return (
     <Stack.Navigator initialRouteName={routeName}>
+      <Stack.Screen
+        name="Splash"
+        component={SplashScreen}
+        options={{header: () => null}}
+      />
       <Stack.Screen
         name="Onboarding"
         component={OnboardingScreen}
