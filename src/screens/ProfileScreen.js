@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import FormButton from '../components/FormButton';
-import {AuthContext} from '../navigation/AuthProvider';
+import {AuthContext} from '../navigations/AuthProvider';
 
 const ProfileScreen = () => {
   const {user, logout} = useContext(AuthContext);
